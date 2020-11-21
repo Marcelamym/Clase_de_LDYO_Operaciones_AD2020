@@ -1,0 +1,232 @@
+---
+title: "ASEORIA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(tidyverse)
+library(readr)
+library(zoo)
+install.packages(zoo)
+
+#Abrir el documento con datos limpios, ung caracterisitcas, etc.
+
+```
+
+
+
+```{r}
+samsung_completos <- read.csv("~/Documents/Semestre ago2020/LABO/datos_completos.csv")
+
+samsung_completos
+dim(samsung_completos)
+
+```
+
+```{r}
+datos_ma <- samsung_completos %>% select(pdv_id, mes_id, sku_id,  ventas_totales, y_ventas_siguiente_mes)
+datos_ma
+dim(datos_ma)
+```
+
+```{r}
+datos_ma <- datos_ma %>% group_by(pdv_id,sku_id) %>%
+  mutate(pedir_mes_pasado = rollmean(ventas_totales, k= 1, fill = NA, align = "right")) %>%
+  mutate(pedir_2meses_pasado = rollmean(ventas_totales, k= 2, fill = NA, align = "right")) %>%
+  mutate(pedir_3meses_pasado = rollmean(ventas_totales, k= 3, fill = NA, align = "right"))
+head(datos_ma,20)
+```
+# Errores para cada mes.
+```{r}
+errores_julio <- datos_ma %>% filter(mes_id == "0") %>% mutate(res_jul = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_jul_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_jul_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_julio
+```
+
+```{r}
+errores_agosto <- datos_ma %>% filter(mes_id == "1") %>% mutate(res_ago = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_ago_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_ago_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_agosto
+```
+
+```{r}
+errores_septiembre <- datos_ma %>% filter(mes_id == "2") %>% mutate(res_sep = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_sep_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_sep_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_septiembre
+```
+
+```{r}
+errores_octubre <- datos_ma %>% filter(mes_id == "3") %>% mutate(res_oct = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_oct_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_oct_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_octubre
+```
+
+```{r}
+errores_noviembre <- datos_ma %>% filter(mes_id == "4") %>% mutate(res_nov = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_nov_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_nov_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_noviembre
+```
+
+```{r}
+errores_diciembre <- datos_ma %>% filter(mes_id == "5") %>% mutate(res_dic = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_dic_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_dic_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_diciembre
+```
+
+```{r}
+errores_enero <- datos_ma %>% filter(mes_id == "6") %>% mutate(res_ene = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_ene_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_ene_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_enero
+```
+
+```{r}
+errores_febrero <- datos_ma %>% filter(mes_id == "7") %>% mutate(res_feb = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_feb_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_feb_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_febrero
+```
+
+```{r}
+errores_marzo <- datos_ma %>% filter(mes_id == "8") %>% mutate(res_mar = y_ventas_siguiente_mes-pedir_mes_pasado) %>%
+  mutate(res_mar_2 = y_ventas_siguiente_mes-pedir_2meses_pasado) %>%
+  mutate(res_mar_3 = y_ventas_siguiente_mes-pedir_3meses_pasado)
+errores_marzo
+```
+
+#Crar data frame errores para cada mes
+```{r}
+mae <- function(error)
+{
+  mean(abs(error), na.rm = TRUE)
+}
+
+```
+
+```{r}
+mae(errores_julio$res_jul)
+mae(errores_julio$res_jul_2)
+mae(errores_julio$res_jul_3)
+
+```
+```{r}
+mae(errores_agosto$res_ago)
+mae(errores_agosto$res_ago_2)
+mae(errores_agosto$res_ago_3)
+
+```
+
+```{r}
+mae(errores_septiembre$res_sep)
+mae(errores_septiembre$res_sep_2)
+mae(errores_septiembre$res_sep_3)
+
+```
+```{r}
+mae(errores_octubre$res_oct)
+mae(errores_octubre$res_oct_2)
+mae(errores_octubre$res_oct_3)
+```
+```{r}
+mae(errores_noviembre$res_nov)
+mae(errores_noviembre$res_nov_2)
+mae(errores_noviembre$res_nov_3)
+
+```
+```{r}
+mae(errores_diciembre$res_dic)
+mae(errores_diciembre$res_dic_2)
+mae(errores_diciembre$res_dic_3)
+
+```
+
+```{r}
+mae(errores_enero$res_ene)
+mae(errores_enero$res_ene_2)
+mae(errores_enero$res_ene_3)
+
+```
+
+
+```{r}
+mae(errores_febrero$res_feb)
+mae(errores_febrero$res_feb_2)
+mae(errores_febrero$res_feb_3)
+
+```
+
+```{r}
+mae(errores_marzo$res_mar)
+mae(errores_marzo$res_mar_2)
+mae(errores_marzo$res_mar_3)
+```
+
+```{r}
+resultado_ma <- read.csv("~/Documents/Semestre ago2020/LABO/Resultados_MA.csv")
+resultado_ma
+```
+
+
+```{r}
+library(ggplot2)
+
+ggplot(resultado_ma,aes(x = Mes_ID, y = Errores, colour= Modelo)) + geom_line() 
+
+```
+
+
+```{r}
+er <- ggplot(resultado_ma,aes(x = Mes_ID, y = Errores, colour = Modelo)) + geom_line() + geom_point()+ggtitle("MAE de cada modelo por mes")+xlab("Mes ID")+ylab("Error")
+
+er
+```
+
+
+```{r}
+er + theme_classic(base_size = 16)
+
+help("row")
+```
+
+```{r}
+er + theme_classic(base_size = 16)+
+  scale_x_continuous("Mes ID", breaks=c(0,1,2,3,4,5,6,7,8,9), limits=c(0,9))+
+  scale_y_continuous("Error", breaks=seq(0.13,0.55,0.1), limits=c(0.13,0.55))+
+  scale_color_manual(values=c("firebrick1","darkturquoise","green3"))
+
+help("row")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
